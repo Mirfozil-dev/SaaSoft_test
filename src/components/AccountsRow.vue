@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Account } from "@/types.ts";
-import { computed, ref } from "vue";
-import {accountTypes} from "@/accounts.data.ts";
+import { computed, nextTick, ref } from "vue";
+import { accountTypes } from "@/accounts.data.ts";
 
 const props = defineProps<{
   account: Account
@@ -11,7 +11,8 @@ const isPassVisible = ref(false)
 
 const emit = defineEmits<{
   (e: 'deleteAccount', id: string): void,
-  <T extends keyof Account>(e: 'changeAccount', id: string, key: T, value: Account[T]): void
+  <T extends keyof Account>(e: 'changeAccount', id: string, key: T, value: Account[T]): void,
+  (e: 'saveAccount', value: Account): void,
 }>()
 
 const togglePasswordVisibility = () => {
@@ -22,14 +23,30 @@ const removeAccount = () => {
   emit('deleteAccount', props.account.id);
 }
 
-const handleChangeLabels = (val: string) => {
-  const result: Array<{ text: string }> = []
-  val.split(';').forEach(item => {
-    result.push({
-      text: item,
-    });
+const handleChange = (key: keyof Account, val: string) => {
+  if (key === "labels") {
+    const result: Array<{ text: string }> = []
+    val.split(';').forEach(item => {
+      result.push({
+        text: item,
+      });
+    })
+    emit('changeAccount', props.account.id, 'labels', result)
+  } else {
+    if (key === "type") {
+      emit('changeAccount', props.account.id, 'password', null)
+    }
+    emit('changeAccount', props.account.id, key, val)
+  }
+  nextTick(() => {
+    if (
+        props.account.labels.length <= 50 &&
+        (props.account.login.length > 0 && props.account.login.length <= 100) &&
+        (props.account.type !== 'Локальная' || (props.account.password?.length! > 0 && props.account.password?.length! <= 100))
+    ) {
+      emit('saveAccount', props.account)
+    }
   })
-  emit('changeAccount', props.account.id, 'labels', result)
 }
 
 const formattedLabels = computed(() => {
@@ -53,14 +70,13 @@ const labelsRules = [
 </script>
 
 <template>
-  <v-form>
-    <v-row>
+  <v-row>
       <v-col>
         <v-textarea
             rows="1"
             auto-grow
             :model-value="formattedLabels"
-            @update:model-value="handleChangeLabels"
+            @update:model-value="(val: string) => handleChange('labels', val)"
             label="Метки"
             variant="outlined"
             density="compact"
@@ -71,7 +87,7 @@ const labelsRules = [
       <v-col>
         <v-select
             :model-value="account.type"
-            @update:model-value="(val: string) => emit('changeAccount', account.id, 'type', val)"
+            @update:model-value="(val: string) => handleChange('type', val)"
             :items="accountTypes"
             label="Тип записи"
             variant="outlined"
@@ -82,7 +98,7 @@ const labelsRules = [
       <v-col>
         <v-text-field
             :model-value="account.login"
-            @update:model-value="(val: string) => emit('changeAccount', account.id, 'login', val)"
+            @update:model-value="(val: string) => handleChange('login', val)"
             label="Логин"
             variant="outlined"
             density="compact"
@@ -94,7 +110,7 @@ const labelsRules = [
       <v-col v-show="account.type !== 'LDAP'">
         <v-text-field
             :model-value="account.password"
-            @update:model-value="(val: string) => emit('changeAccount', account.id, 'password', val)"
+            @update:model-value="(val: string) => handleChange('password', val)"
             label="Пароль"
             variant="outlined"
             density="compact"
@@ -112,7 +128,6 @@ const labelsRules = [
         </v-btn>
       </v-col>
     </v-row>
-  </v-form>
 </template>
 
 <style scoped>

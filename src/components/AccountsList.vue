@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AccountsRow from "@/components/AccountsRow.vue";
 import { useAccountStore } from '@/stores/accounts.ts';
-import type {Account} from "@/types.ts";
+import type { Account } from "@/types.ts";
 
 const store = useAccountStore();
 
@@ -12,6 +12,12 @@ const handleDeleteAccount = (id: string) => {
 const handleChangeAccount = <T extends keyof Account>(id: string, key: T, value: Account[T]) => {
   store.changeAccount(id, key, value);
 }
+
+const handleSaveAccount = (account: Account) => {
+  store.saveAccount(account);
+}
+
+store.loadAccounts()
 </script>
 
 <template>
@@ -21,5 +27,6 @@ const handleChangeAccount = <T extends keyof Account>(id: string, key: T, value:
       :account="account"
       @delete-account="handleDeleteAccount"
       @change-account="handleChangeAccount"
+      @save-account="handleSaveAccount"
   />
 </template>

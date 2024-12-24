@@ -2,7 +2,6 @@
 import AccountsHeader from "@/components/AccountsHeader.vue";
 import AccountsTip from "@/components/AccountsTip.vue";
 import AccountsList from "@/components/AccountsList.vue";
-
 </script>
 
 <template>

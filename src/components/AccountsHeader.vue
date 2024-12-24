@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useAccountStore} from "@/stores/accounts.ts";
+import { useAccountStore } from "@/stores/accounts.ts";
 
 const { addAccount } = useAccountStore();
 </script>
