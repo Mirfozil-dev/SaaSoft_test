@@ -27,9 +27,12 @@ const handleChange = (key: keyof Account, val: string) => {
   if (key === "labels") {
     const result: Array<{ text: string }> = []
     val.split(';').forEach(item => {
-      result.push({
-        text: item,
-      });
+      const text = item.trim()
+      if (text.length > 0) {
+        result.push({
+          text
+        });
+      }
     })
     emit('changeAccount', props.account.id, 'labels', result)
   } else {
