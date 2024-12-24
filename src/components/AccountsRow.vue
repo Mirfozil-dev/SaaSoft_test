@@ -50,7 +50,7 @@ const handleChange = (key: keyof Account, val: string) => {
 }
 
 const formattedLabels = computed(() => {
-  return props.account.labels.map(item => item.text).join(';')
+  return props.account.labels?.map(item => item.text).join(';')
 })
 
 const fieldRules = [

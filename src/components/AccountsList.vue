@@ -21,12 +21,22 @@ store.loadAccounts()
 </script>
 
 <template>
-  <accounts-row
-      v-for="(account, index) in store.accounts"
-      :key="index"
-      :account="account"
-      @delete-account="handleDeleteAccount"
-      @change-account="handleChangeAccount"
-      @save-account="handleSaveAccount"
-  />
+  <div class="overflow-x-scroll overflow-y-hidden py-2">
+    <accounts-row
+        v-for="(account, index) in store.accounts"
+        :key="index"
+        class="accounts_row"
+        :account="account"
+        @delete-account="handleDeleteAccount"
+        @change-account="handleChangeAccount"
+        @save-account="handleSaveAccount"
+    />
+  </div>
 </template>
+
+<style scoped>
+.accounts_row {
+  width: 100%;
+  min-width: 700px;
+}
+</style>
